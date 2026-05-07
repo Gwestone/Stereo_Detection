@@ -5,10 +5,17 @@ public class DroneFollowScript : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField] private float maxSpeed = 10;
     [SerializeField] private GameObject player;
+    [Tooltip("How fast the drone can physically rotate. Lower = heavier feel.")]
+    [SerializeField] private float turnSpeed = 5f;
 
     [Header("Avoidance Settings")]
-    [SerializeField] private float groundRadarDistance = 20f; // How far down the laser looks
-    [SerializeField] private float dodgeForce = 300f;        // How hard it pushes up to survive
+    [SerializeField] private float groundRadarDistance = 20f; 
+    [SerializeField] private float dodgeForce = 300f;        
+    [SerializeField] private float verticalDamping = 10f; 
+
+    [Header("Forces")]
+    [SerializeField] private float hoverForceMultiplier = 1f;
+    [SerializeField] private float maneuverability = 5f; 
 
     [Header("References")]
     public Rigidbody playerRb;
@@ -19,66 +26,62 @@ public class DroneFollowScript : MonoBehaviour
         rb = GetComponent<Rigidbody>();
     }
 
-    void Update()
-    {
-        // Always look at the player
-        if (player == null) return;
-        
-        Vector3 futurePlayerPos = transform.position + DroneMath.CalculateInterceptDirection(transform.position, player.transform.position, playerRb.linearVelocity, maxSpeed, 1.2f);
-
-        // 1. Calculate direction to player
-        Vector3 directionToPlayer = (futurePlayerPos - transform.position).normalized;
-
-        transform.LookAt(directionToPlayer);
-        
-    }
-
     void FixedUpdate()
     {
-        if (player == null) return;
+        if (player == null || playerRb == null) return;
 
-        Vector3 futurePlayerPos = transform.position + DroneMath.CalculateInterceptDirection(transform.position, player.transform.position, playerRb.linearVelocity, maxSpeed, 1.2f);
+        // 1. Where do we WANT to look?
+        float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
+        float currentMaxSpeed = (distanceToPlayer > 30f) ? maxSpeed * 1.5f : maxSpeed;
 
-        // 1. Calculate direction to player
+        Vector3 futurePlayerPos = transform.position + DroneMath.CalculateInterceptDirection(transform.position, player.transform.position, playerRb.linearVelocity, currentMaxSpeed, 1.2f);
         Vector3 directionToPlayer = (futurePlayerPos - transform.position).normalized;
-        Vector3 acceleration = directionToPlayer * maxSpeed;
 
-        // 2. Base movement (Hover + Move to player)
-        Vector3 totalForce = (acceleration * rb.mass);
+        // --- NEW: SMOOTH ROTATION ---
+        // Instead of instantly LookAt, we smoothly rotate towards the target over time
+        Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, turnSpeed * Time.fixedDeltaTime);
+        // ----------------------------
 
-        // --- NEW: Ground Avoidance Radar ---
-        // 3. Shoot an invisible ray straight down from the drone
+        // --- UPDATED: LOOK-DRIVEN PHYSICS ---
+        // The drone now wants to go wherever its nose is CURRENTLY pointing, not magically at the player.
+        // If it hasn't finished turning yet, it will swing wide!
+        Vector3 desiredVelocity = transform.forward * currentMaxSpeed;
+        
+        Vector3 velocityError = desiredVelocity - rb.linearVelocity;
+        Vector3 totalForce = (velocityError * maneuverability * rb.mass);
+        // ------------------------------------
+
+        // --- Dive-Bomb Override ---
+        float groundFearWeight = Mathf.Clamp01(distanceToPlayer / 20f);
+
+        // --- Ground Avoidance Radar ---
         RaycastHit hit;
         if (Physics.Raycast(transform.position, Vector3.down, out hit, groundRadarDistance))
         {
-            // Did the laser hit the ground?
             if (hit.collider.CompareTag("Ground"))
             {
-                // Calculate panic level. (1 = crashing right now, 0.1 = just entered radar)
                 float panicLevel = 1f - (hit.distance / groundRadarDistance);
-                
-                // Push the drone straight up based on how close the ground is
-                Vector3 emergencyThrust = Vector3.up * dodgeForce * panicLevel;
+                float currentUpwardSpeed = rb.linearVelocity.y;
+                float dampingForce = Mathf.Max(0, currentUpwardSpeed * verticalDamping);
+
+                float finalUpwardForce = ((dodgeForce * panicLevel) - dampingForce) * groundFearWeight;
+                finalUpwardForce = Mathf.Max(0, finalUpwardForce);
+
+                Vector3 emergencyThrust = Vector3.up * finalUpwardForce;
                 totalForce += emergencyThrust;
                 
-                // Optional: Draw a red line in the editor so you can see the radar working!
                 Debug.DrawRay(transform.position, Vector3.down * hit.distance, Color.red);
             }
         }
         else
         {
-            // Optional: Draw a green line when the ground is safely far away
             Debug.DrawRay(transform.position, Vector3.down * groundRadarDistance, Color.green);
         }
  
-        // 4. Apply all forces
-        rb.AddForce(totalForce);
+        Vector3 hoverForce = Vector3.up * 9.81f * rb.mass * hoverForceMultiplier * groundFearWeight;
 
-        // 5. Speed Limit
-        if (rb.linearVelocity.magnitude > maxSpeed)
-        {
-            rb.linearVelocity = rb.linearVelocity.normalized * maxSpeed;
-        }
+        rb.AddForce(totalForce + hoverForce);
     }
 
     void OnCollisionEnter(Collision collision)
@@ -90,7 +93,7 @@ public class DroneFollowScript : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Ground"))
         {
-            Destroy(gameObject); // It will still explode if it hits the ground!
+            Destroy(gameObject); 
         }
     }
 }
