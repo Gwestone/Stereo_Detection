@@ -100,23 +100,31 @@ public class DroneFollowScript : MonoBehaviour
 // It just takes inputs and spits out perfect, predictable math.
 public static class DroneMath
 {
-    // A Pure Function: No side effects, no hidden state.
     public static Vector3 CalculateInterceptDirection(
         Vector3 dronePos, 
         Vector3 targetPos, 
         Vector3 targetVelocity, 
         float droneMaxSpeed, 
-        float predictionTimeMultiplier)
+        float maxPredictionTime = 1.2f) // Added a time cap!
     {
-        // Calculate time to intercept
+        // 1. Calculate ideal time to intercept
         float distance = Vector3.Distance(dronePos, targetPos);
         float timeToIntercept = distance / droneMaxSpeed;
 
-        // Calculate where the target will be
-        Vector3 futureOffset = targetVelocity * timeToIntercept * predictionTimeMultiplier;
+        // --- NEW: HORIZON CLAMPING ---
+        // Never predict further ahead than our max limit (e.g., 1.2 seconds)
+        // This stops the drone from getting confused if you brake from far away
+        timeToIntercept = Mathf.Min(timeToIntercept, maxPredictionTime);
+
+        // --- NEW: CLOSE-RANGE BLENDING ---
+        // If distance is 15+, weight is 1 (Full Prediction). 
+        // If distance is 0, weight is 0 (Direct Pursuit).
+        float predictionWeight = Mathf.Clamp01(distance / 15f);
+
+        // 3. Calculate the smart aim point
+        Vector3 futureOffset = targetVelocity * timeToIntercept * predictionWeight;
         Vector3 predictedPosition = targetPos + futureOffset;
 
-        // Return the direction to that future point
         return (predictedPosition - dronePos).normalized;
     }
 }
