@@ -7,37 +7,44 @@ public class DroneFollowScript : MonoBehaviour
     [SerializeField] private GameObject player;
 
     [Header("Avoidance Settings")]
-    [SerializeField] private float groundRadarDistance = 5f; // How far down the laser looks
+    [SerializeField] private float groundRadarDistance = 20f; // How far down the laser looks
     [SerializeField] private float dodgeForce = 300f;        // How hard it pushes up to survive
 
+    [Header("References")]
+    public Rigidbody playerRb;
     private Rigidbody rb;
-    private Vector3 liftForce = Vector3.zero;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        liftForce = Vector3.up * 9.81f * rb.mass;
     }
 
     void Update()
     {
         // Always look at the player
-        if (player != null)
-        {
-            transform.LookAt(player.transform);
-        }
+        if (player == null) return;
+        
+        Vector3 futurePlayerPos = transform.position + DroneMath.CalculateInterceptDirection(transform.position, player.transform.position, playerRb.linearVelocity, maxSpeed, 1.2f);
+
+        // 1. Calculate direction to player
+        Vector3 directionToPlayer = (futurePlayerPos - transform.position).normalized;
+
+        transform.LookAt(directionToPlayer);
+        
     }
 
     void FixedUpdate()
     {
         if (player == null) return;
 
+        Vector3 futurePlayerPos = transform.position + DroneMath.CalculateInterceptDirection(transform.position, player.transform.position, playerRb.linearVelocity, maxSpeed, 1.2f);
+
         // 1. Calculate direction to player
-        Vector3 directionToPlayer = (player.transform.position - transform.position).normalized;
+        Vector3 directionToPlayer = (futurePlayerPos - transform.position).normalized;
         Vector3 acceleration = directionToPlayer * maxSpeed;
 
         // 2. Base movement (Hover + Move to player)
-        Vector3 totalForce = (acceleration * rb.mass) + liftForce;
+        Vector3 totalForce = (acceleration * rb.mass);
 
         // --- NEW: Ground Avoidance Radar ---
         // 3. Shoot an invisible ray straight down from the drone
@@ -85,5 +92,31 @@ public class DroneFollowScript : MonoBehaviour
         {
             Destroy(gameObject); // It will still explode if it hits the ground!
         }
+    }
+}
+
+// --- The "Functional Core" ---
+// This is a static class. It holds no data, it remembers nothing.
+// It just takes inputs and spits out perfect, predictable math.
+public static class DroneMath
+{
+    // A Pure Function: No side effects, no hidden state.
+    public static Vector3 CalculateInterceptDirection(
+        Vector3 dronePos, 
+        Vector3 targetPos, 
+        Vector3 targetVelocity, 
+        float droneMaxSpeed, 
+        float predictionTimeMultiplier)
+    {
+        // Calculate time to intercept
+        float distance = Vector3.Distance(dronePos, targetPos);
+        float timeToIntercept = distance / droneMaxSpeed;
+
+        // Calculate where the target will be
+        Vector3 futureOffset = targetVelocity * timeToIntercept * predictionTimeMultiplier;
+        Vector3 predictedPosition = targetPos + futureOffset;
+
+        // Return the direction to that future point
+        return (predictedPosition - dronePos).normalized;
     }
 }

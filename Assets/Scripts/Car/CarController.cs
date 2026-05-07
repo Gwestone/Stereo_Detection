@@ -52,13 +52,11 @@ public class CarController : MonoBehaviour
 
         float efficiency = Mathf.Clamp(1f - (rb.linearVelocity.magnitude / maxSpeed), 0f, 1f);
 
-        // 3. Apply engine power to the BACK wheels (Rear-Wheel Drive)
+        // 3. Apply engine power to the ALL wheels (All-Wheel Drive)
         float acceleration = motorForce * verticalInput * efficiency;
         backLeft.motorTorque = acceleration;
         backRight.motorTorque = acceleration;
         frontLeft.motorTorque = acceleration;
         frontRight.motorTorque = acceleration;
-        
-        // Note: If you want All-Wheel Drive (AWD), just apply motorTorque to the front wheels too!
     }
 }

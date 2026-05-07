@@ -918,6 +918,7 @@ MonoBehaviour:
   player: {fileID: 2003805668}
   groundRadarDistance: 5
   dodgeForce: 300
+  playerRb: {fileID: 2003805670}
 --- !u!54 &730001519
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1442,7 +1443,7 @@ Transform:
   m_GameObject: {fileID: 1386937946}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.94, z: 0}
+  m_LocalPosition: {x: 0, y: 1.23, z: 0}
   m_LocalScale: {x: 3, y: 2.47878, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2170,6 +2171,7 @@ MonoBehaviour:
   backRight: {fileID: 1499080031}
   motorForce: 5000
   maxSteerAngle: 30
+  maxSpeed: 25
 --- !u!114 &2003805672
 MonoBehaviour:
   m_ObjectHideFlags: 0
