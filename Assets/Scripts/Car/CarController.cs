@@ -13,17 +13,16 @@ public class CarController : MonoBehaviour
     [Header("Car Settings")]
     public float motorForce = 1500f; // How strong the engine is
     public float maxSteerAngle = 30f; // How far the wheels can turn
+    public float maxSpeed = 25f;
 
     private float horizontalInput;
     private float verticalInput;
+    private Rigidbody rb;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        frontLeft.transform.localRotation = Quaternion.Euler(0, 0, 90);
-        frontRight.transform.localRotation = Quaternion.Euler(0, 0, 90);
-        backLeft.transform.localRotation = Quaternion.Euler(0, 0, 90);
-        backRight.transform.localRotation = Quaternion.Euler(0, 0, 90);
+        rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -51,10 +50,14 @@ public class CarController : MonoBehaviour
         frontLeft.steerAngle = steer;
         frontRight.steerAngle = steer;
 
+        float efficiency = Mathf.Clamp(1f - (rb.linearVelocity.magnitude / maxSpeed), 0f, 1f);
+
         // 3. Apply engine power to the BACK wheels (Rear-Wheel Drive)
-        float acceleration = motorForce * verticalInput;
+        float acceleration = motorForce * verticalInput * efficiency;
         backLeft.motorTorque = acceleration;
         backRight.motorTorque = acceleration;
+        frontLeft.motorTorque = acceleration;
+        frontRight.motorTorque = acceleration;
         
         // Note: If you want All-Wheel Drive (AWD), just apply motorTorque to the front wheels too!
     }
