@@ -916,6 +916,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DroneFollowScript
   maxSpeed: 33
   player: {fileID: 2003805668}
+  groundRadarDistance: 5
+  dodgeForce: 300
 --- !u!54 &730001519
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1388,7 +1390,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 1
+    m_Stiffness: 2.5
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1587,7 +1589,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 1
+    m_Stiffness: 2.5
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1764,7 +1766,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 1
+    m_Stiffness: 2.5
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1851,7 +1853,7 @@ WheelCollider:
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
     m_AsymptoteValue: 0.75
-    m_Stiffness: 1
+    m_Stiffness: 2.5
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -2098,6 +2100,7 @@ GameObject:
   - component: {fileID: 2003805669}
   - component: {fileID: 2003805670}
   - component: {fileID: 2003805671}
+  - component: {fileID: 2003805672}
   m_Layer: 0
   m_Name: Car
   m_TagString: Untagged
@@ -2130,7 +2133,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2003805668}
   serializedVersion: 5
-  m_Mass: 1500
+  m_Mass: 5000
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -2165,8 +2168,21 @@ MonoBehaviour:
   frontRight: {fileID: 1333748803}
   backLeft: {fileID: 1469518474}
   backRight: {fileID: 1499080031}
-  motorForce: 1500
+  motorForce: 5000
   maxSteerAngle: 30
+--- !u!114 &2003805672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2003805668}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 863d5260cc13ca5888d84921d59f83af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CarCenterOfMass
+  centerOfMassOffset: {x: 0, y: -0.5, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
