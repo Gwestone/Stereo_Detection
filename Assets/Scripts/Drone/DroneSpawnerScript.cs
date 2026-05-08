@@ -36,8 +36,14 @@ public class DroneSpawnerScript : MonoBehaviour
     void Update()
     {
         if(followTarget == null)
+        {
+            Debug.LogWarning("Follow Target is not set");
             return;
+        }
         
+        transform.position = followTarget.transform.position;
+        transform.rotation = followTarget.transform.rotation;
+
         activeDrones.RemoveAll(drone => drone == null);
 
         if(activeDrones.Count < maxDrones && spawnTimer <= 0)
