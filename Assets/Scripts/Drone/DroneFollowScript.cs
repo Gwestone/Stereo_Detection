@@ -3,8 +3,8 @@ using UnityEngine;
 public class DroneFollowScript : MonoBehaviour
 {
     [Header("Movement Settings")]
-    [SerializeField] private float maxSpeed = 10;
-    [SerializeField] private GameObject player;
+    [SerializeField] public float maxSpeed = 10;
+    [SerializeField] public GameObject player;
     [Tooltip("How fast the drone can physically rotate. Lower = heavier feel.")]
     [SerializeField] private float turnSpeed = 5f;
 
@@ -15,14 +15,14 @@ public class DroneFollowScript : MonoBehaviour
 
     [Header("Forces")]
     [SerializeField] private float hoverForceMultiplier = 1f;
-    [SerializeField] private float maneuverability = 5f; 
+    [SerializeField] public float maneuverability = 5f; 
 
-    [Header("References")]
-    public Rigidbody playerRb;
+    private Rigidbody playerRb;
     private Rigidbody rb;
 
     void Start()
     {
+        playerRb = player.GetComponent<Rigidbody>();
         rb = GetComponent<Rigidbody>();
     }
 
