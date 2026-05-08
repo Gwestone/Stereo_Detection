@@ -84,7 +84,6 @@ public class DroneSpawnerScript : MonoBehaviour
         {
             droneMovement.player = followTarget;
             droneMovement.maxSpeed = 33f;
-            droneMovement.maneuverability = 3f;
         }
 
         return drone;

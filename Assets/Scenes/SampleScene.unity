@@ -929,7 +929,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8762286023885395322, guid: 9c489a8547f4d9e4387da15a4ff82c81, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.0000000010523398
+      value: -0.0000000010523397
       objectReference: {fileID: 0}
     - target: {fileID: 8762286023885395322, guid: 9c489a8547f4d9e4387da15a4ff82c81, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1111,6 +1111,10 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 2003805668}
+    - target: {fileID: 1192207261779478141, guid: de4943b102104a8d8b25d7e66f02df12, type: 3}
+      propertyPath: hoverForceMultiplier
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6468275461376277189, guid: de4943b102104a8d8b25d7e66f02df12, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.16

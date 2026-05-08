@@ -2,60 +2,73 @@ using UnityEngine;
 
 public class DroneFollowScript : MonoBehaviour
 {
-    [Header("Movement Settings")]
-    [SerializeField] public float maxSpeed = 10;
+    [Header("Movement Limits")]
+    [SerializeField] public float maxSpeed = 33f;
     [SerializeField] public GameObject player;
-    [Tooltip("How fast the drone can physically rotate. Lower = heavier feel.")]
-    [SerializeField] private float turnSpeed = 5f;
+    
+    [Tooltip("How fast the drone can rotate its nose (Degrees per Second).")]
+    [SerializeField] private float turnRateDegrees = 120f;
+    
+    [Tooltip("Engine power: How fast it speeds up straight ahead (m/s^2).")]
+    [SerializeField] private float maxForwardAccel = 25f;
+    
+    [Tooltip("Air Grip: How hard it fights sliding sideways. Low = Drifty, High = Missile (m/s^2).")]
+    [SerializeField] private float maxLateralAccel = 15f;
 
     [Header("Avoidance Settings")]
     [SerializeField] private float groundRadarDistance = 20f; 
     [SerializeField] private float dodgeForce = 300f;        
-    [SerializeField] private float verticalDamping = 10f; 
+    [SerializeField] private float verticalDamping = 10f;  
 
     [Header("Forces")]
     [SerializeField] private float hoverForceMultiplier = 1f;
-    [SerializeField] public float maneuverability = 5f; 
 
-    private Rigidbody playerRb;
+    [HideInInspector] public Rigidbody playerRb;
     private Rigidbody rb;
 
     void Start()
     {
-        playerRb = player.GetComponent<Rigidbody>();
         rb = GetComponent<Rigidbody>();
+        if (player != null) playerRb = player.GetComponent<Rigidbody>();
     }
 
     void FixedUpdate()
     {
         if (player == null || playerRb == null) return;
 
-        // 1. Where do we WANT to look?
+        // 1. Prediction math (Unchanged)
         float distanceToPlayer = Vector3.Distance(transform.position, player.transform.position);
         float currentMaxSpeed = (distanceToPlayer > 30f) ? maxSpeed * 1.5f : maxSpeed;
 
         Vector3 futurePlayerPos = transform.position + DroneMath.CalculateInterceptDirection(transform.position, player.transform.position, playerRb.linearVelocity, currentMaxSpeed, 1.2f);
         Vector3 directionToPlayer = (futurePlayerPos - transform.position).normalized;
 
-        // --- NEW: SMOOTH ROTATION ---
-        // Instead of instantly LookAt, we smoothly rotate towards the target over time
-        Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, turnSpeed * Time.fixedDeltaTime);
-        // ----------------------------
+        // --- NEW: STRICT TURN RATE LIMITING ---
+        // Instead of Slerp, we use RotateTowards to guarantee it never turns faster than allowed
+        float singleStep = turnRateDegrees * Mathf.Deg2Rad * Time.fixedDeltaTime;
+        Vector3 newForward = Vector3.RotateTowards(transform.forward, directionToPlayer, singleStep, 0.0f);
+        transform.rotation = Quaternion.LookRotation(newForward);
 
-        // --- UPDATED: LOOK-DRIVEN PHYSICS ---
-        // The drone now wants to go wherever its nose is CURRENTLY pointing, not magically at the player.
-        // If it hasn't finished turning yet, it will swing wide!
+        // --- NEW: G-FORCE CLAMPED PHYSICS ---
+        // The drone wants to go where its nose is pointing
         Vector3 desiredVelocity = transform.forward * currentMaxSpeed;
         
-        Vector3 velocityError = desiredVelocity - rb.linearVelocity;
-        Vector3 totalForce = (velocityError * maneuverability * rb.mass);
-        // ------------------------------------
+        // Calculate the raw acceleration needed to fix the velocity error in 0.5 seconds
+        Vector3 requiredAcceleration = (desiredVelocity - rb.linearVelocity) * 2f; 
 
-        // --- Dive-Bomb Override ---
+        // Split that acceleration into "Forward" and "Sideways" components
+        float forwardRequest = Vector3.Dot(requiredAcceleration, transform.forward);
+        Vector3 lateralRequestVector = requiredAcceleration - (transform.forward * forwardRequest);
+
+        // CLAMP to our physical limits!
+        float clampedForward = Mathf.Clamp(forwardRequest, -maxForwardAccel, maxForwardAccel);
+        Vector3 clampedLateral = Vector3.ClampMagnitude(lateralRequestVector, maxLateralAccel);
+
+        // Recombine and apply mass
+        Vector3 totalForce = ((transform.forward * clampedForward) + clampedLateral) * rb.mass;
+
+        // --- Dive-Bomb Override & Radar (Unchanged) ---
         float groundFearWeight = Mathf.Clamp01(distanceToPlayer / 20f);
-
-        // --- Ground Avoidance Radar ---
         RaycastHit hit;
         if (Physics.Raycast(transform.position, Vector3.down, out hit, groundRadarDistance))
         {
@@ -68,9 +81,7 @@ public class DroneFollowScript : MonoBehaviour
                 float finalUpwardForce = ((dodgeForce * panicLevel) - dampingForce) * groundFearWeight;
                 finalUpwardForce = Mathf.Max(0, finalUpwardForce);
 
-                Vector3 emergencyThrust = Vector3.up * finalUpwardForce;
-                totalForce += emergencyThrust;
-                
+                totalForce += Vector3.up * finalUpwardForce;
                 Debug.DrawRay(transform.position, Vector3.down * hit.distance, Color.red);
             }
         }
@@ -80,7 +91,6 @@ public class DroneFollowScript : MonoBehaviour
         }
  
         Vector3 hoverForce = Vector3.up * 9.81f * rb.mass * hoverForceMultiplier * groundFearWeight;
-
         rb.AddForce(totalForce + hoverForce);
     }
 
