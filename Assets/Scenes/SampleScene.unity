@@ -1594,6 +1594,8 @@ GameObject:
   - component: {fileID: 1321422964}
   - component: {fileID: 1321422963}
   - component: {fileID: 1321422962}
+  - component: {fileID: 1321422965}
+  - component: {fileID: 1321422966}
   m_Layer: 0
   m_Name: panel
   m_TagString: Untagged
@@ -1633,7 +1635,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
@@ -1694,6 +1696,56 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1321422960}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1321422965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1321422960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10d74d2e9764f2bd4b273c2938fb17b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrapezoidColliderScript
+  nearWidth: 0.2
+  nearHeight: 0.15
+  farWidth: 8
+  farHeight: 6
+  range: 10
+  requireLineOfSight: 1
+  obstacleLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  targetTag: Enemy
+  OnObjectSpotted:
+    m_PersistentCalls:
+      m_Calls: []
+  OnObjectLost:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!64 &1321422966
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1321422960}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!1 &1328141779
 GameObject:
   m_ObjectHideFlags: 0
@@ -1816,20 +1868,24 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2003805668}
     - target: {fileID: 1192207261779478141, guid: de4943b102104a8d8b25d7e66f02df12, type: 3}
+      propertyPath: stayInPlace
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1192207261779478141, guid: de4943b102104a8d8b25d7e66f02df12, type: 3}
       propertyPath: hoverForceMultiplier
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6468275461376277189, guid: de4943b102104a8d8b25d7e66f02df12, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.16
+      value: 93.5
       objectReference: {fileID: 0}
     - target: {fileID: 6468275461376277189, guid: de4943b102104a8d8b25d7e66f02df12, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 17.94
+      value: 35
       objectReference: {fileID: 0}
     - target: {fileID: 6468275461376277189, guid: de4943b102104a8d8b25d7e66f02df12, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 546.2
+      value: 475.9
       objectReference: {fileID: 0}
     - target: {fileID: 6468275461376277189, guid: de4943b102104a8d8b25d7e66f02df12, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1862,6 +1918,14 @@ PrefabInstance:
     - target: {fileID: 7491322265082968193, guid: de4943b102104a8d8b25d7e66f02df12, type: 3}
       propertyPath: m_Mass
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7491322265082968193, guid: de4943b102104a8d8b25d7e66f02df12, type: 3}
+      propertyPath: m_Constraints
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7491322265082968193, guid: de4943b102104a8d8b25d7e66f02df12, type: 3}
+      propertyPath: m_IsKinematic
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8025394905869608369, guid: de4943b102104a8d8b25d7e66f02df12, type: 3}
       propertyPath: m_Name
@@ -1999,11 +2063,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 645724689495059182, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
       propertyPath: m_LinearDamping
-      value: 0.1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 645724689495059182, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
       propertyPath: m_AngularDamping
-      value: 0.2
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 1693865539985579840, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
       propertyPath: m_Name
