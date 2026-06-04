@@ -94,7 +94,7 @@ public class DroneFollowScript : MonoBehaviour
 
     protected void OnCollisionEnter(Collision collision)
     {
-        /*if (collision.gameObject == player)
+        if (collision.gameObject == player)
         {
             Destroy(collision.gameObject);
             Destroy(gameObject);
@@ -102,7 +102,7 @@ public class DroneFollowScript : MonoBehaviour
         else if (collision.gameObject.CompareTag("Ground"))
         {
             Destroy(gameObject);
-            }*/
+        }
     }
 }
 
