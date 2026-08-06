@@ -16,9 +16,15 @@ public class DroneFollowScript : MonoBehaviour
     [Tooltip("Air Grip: How hard it fights sliding sideways (m/s^2).")]
     [SerializeField] private float maxLateralAccel = 15f;
 
+    [Header("Orbit Settings")]
+    [Tooltip("How far away the drone should stay while circling.")]
+    [SerializeField] private float orbitRadius = 25f;
+    [Tooltip("True for Clockwise, False for Counter-Clockwise")]
+    [SerializeField] private bool orbitClockwise = true;
+
     [Header("Avoidance Settings")]
     [SerializeField] private float groundRadarDistance = 20f;
-    [SerializeField] private float dodgeForce = 50f; // Note: Lowered because mass is no longer multiplied
+    [SerializeField] private float dodgeForce = 50f;
     [SerializeField] private float verticalDamping = 10f;
 
     [Header("Forces")]
@@ -35,17 +41,18 @@ public class DroneFollowScript : MonoBehaviour
 
     protected void FixedUpdate()
     {
+        if (player == null) return;
 
-        // --- 1. ROTATION (Steering) ---
-        Vector3 directionToPlayer = DroneMath.CalculateInterceptDirection(
+        // --- 1. ROTATION (Steering for Orbit) ---
+        Vector3 directionToOrbit = DroneMath.CalculateOrbitDirection(
             transform.position,
             player.transform.position,
-            playerRb.linearVelocity,
-            maxSpeed
+            orbitRadius,
+            orbitClockwise
         );
 
         float singleStep = turnRateDegrees * Mathf.Deg2Rad * Time.fixedDeltaTime;
-        Vector3 newForward = Vector3.RotateTowards(transform.forward, directionToPlayer, singleStep, 0.0f);
+        Vector3 newForward = Vector3.RotateTowards(transform.forward, directionToOrbit, singleStep, 0.0f);
         transform.rotation = Quaternion.LookRotation(newForward);
 
         // --- 2. MOVEMENT ACCELERATION ---
@@ -70,7 +77,7 @@ public class DroneFollowScript : MonoBehaviour
             if (hit.collider.CompareTag("Ground"))
             {
                 float panicLevel = 1f - (hit.distance / groundRadarDistance);
-                float currentDownwardSpeed = Mathf.Max(0, -rb.linearVelocity.y); // Simplified to one line
+                float currentDownwardSpeed = Mathf.Max(0, -rb.linearVelocity.y);
                 float dampingForce = currentDownwardSpeed * verticalDamping;
 
                 float finalUpwardForce = ((dodgeForce * panicLevel) + dampingForce) * groundFearWeight;
@@ -88,12 +95,13 @@ public class DroneFollowScript : MonoBehaviour
         verticalAccel += Vector3.up * (9.81f * hoverForceMultiplier * groundFearWeight);
 
         // --- 4. APPLY FORCES ---
-        // ForceMode.Acceleration ignores mass entirely, meaning our limits act as pure m/s^2
         rb.AddForce(movementAccel + verticalAccel, ForceMode.Acceleration);
     }
 
     protected void OnCollisionEnter(Collision collision)
     {
+        // Optional: You might want to disable this now so it doesn't blow up
+        // if the player accidentally bumps into it while it orbits.
         if (collision.gameObject == player)
         {
             Destroy(collision.gameObject);
@@ -108,17 +116,30 @@ public class DroneFollowScript : MonoBehaviour
 
 public static class DroneMath
 {
-    public static Vector3 CalculateInterceptDirection(
-        Vector3 dronePos, Vector3 targetPos, Vector3 targetVelocity,
-        float droneMaxSpeed, float maxPredictionTime = 1.2f)
+    public static Vector3 CalculateOrbitDirection(Vector3 dronePos, Vector3 targetPos, float targetRadius, bool clockwise)
     {
-        float distance = Vector3.Distance(dronePos, targetPos);
-        float timeToIntercept = Mathf.Min(distance / droneMaxSpeed, maxPredictionTime);
-        float predictionWeight = Mathf.Clamp01(distance / 15f);
+        // 1. Find vector from drone to target
+        Vector3 vectorToTarget = targetPos - dronePos;
+        float currentDistance = vectorToTarget.magnitude;
+        Vector3 dirToTarget = vectorToTarget.normalized;
 
-        Vector3 futureOffset = targetVelocity * (timeToIntercept * predictionWeight);
+        // 2. Calculate Tangent (The circle path) using Cross Product
+        // Cross product with Vector3.up gives us a perfectly horizontal tangent vector
+        Vector3 tangent;
+        if (clockwise)
+            tangent = Vector3.Cross(Vector3.up, dirToTarget).normalized;
+        else
+            tangent = Vector3.Cross(dirToTarget, Vector3.up).normalized;
 
-        // Simplified return math (removed the redundant extra vector creation)
-        return (targetPos + futureOffset - dronePos).normalized;
+        // 3. Maintain Radius (Push/Pull)
+        // If we are too far, distanceError is positive. Too close, it's negative.
+        float distanceError = currentDistance - targetRadius;
+
+        // Divide by 5f to create a smooth blending zone.
+        // Clamping to -1 and 1 ensures it doesn't overpower the tangent completely.
+        float pullFactor = Mathf.Clamp(distanceError / 5f, -1f, 1f);
+
+        // 4. Combine the circle path with the push/pull correction
+        return (tangent + (dirToTarget * pullFactor)).normalized;
     }
 }

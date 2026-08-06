@@ -4,12 +4,6 @@ using System.Collections.Generic;
 
 public class Radar : MonoBehaviour
 {
-    [Header("FOV Shape")]
-    [SerializeField] private float nearWidth = 0.2f;   // Small opening at camera origin
-    [SerializeField] private float nearHeight = 0.15f;
-    [SerializeField] private float farWidth = 8f;     // Wide end at max range
-    [SerializeField] private float farHeight = 6f;
-    [SerializeField] private float range = 10f;    // How far the FOV reaches
 
     [Header("Detection")]
     [SerializeField] private bool requireLineOfSight = true;

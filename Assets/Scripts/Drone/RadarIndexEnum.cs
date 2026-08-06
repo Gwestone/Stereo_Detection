@@ -4,6 +4,8 @@ public enum RadarIndexEnum
 {
     FR = 0,
     FL = 1,
-    BR = 2,
-    BL = 3
+    MR = 2,
+    ML = 3,
+    BR = 4,
+    BL = 5
 }
