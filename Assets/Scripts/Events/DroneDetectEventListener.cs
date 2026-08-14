@@ -70,7 +70,7 @@ public class DroneDetectEventListener : MonoBehaviour
         {
             var data = _detectQueue.Dequeue();
             Debug.Log("Detection event received from radar: " + data.id);
-            long currentTime = Stopwatch.GetTimestamp();
+            ulong tNs = (ulong)(Stopwatch.GetTimestamp() * (1_000_000_000.0 / Stopwatch.Frequency));
 
             Quaternion bodyRotation = data.bodyRot;
             Quaternion directionRotation = data.directionRot;
@@ -86,7 +86,7 @@ public class DroneDetectEventListener : MonoBehaviour
                     bufferWriter.Write((float)directionRotation.y);
                     bufferWriter.Write((float)directionRotation.z);
                     bufferWriter.Write((float)directionRotation.w);
-                    bufferWriter.Write((ulong)currentTime);
+                    bufferWriter.Write((ulong)tNs);
                     bufferWriter.Write((float)bodyRotation.x);
                     bufferWriter.Write((float)bodyRotation.y);
                     bufferWriter.Write((float)bodyRotation.z);

@@ -40,15 +40,17 @@ public class Radar : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        // Only needed for dynamic LOS — skip if LOS is disabled
-        if (!requireLineOfSight) return;
         if (!MatchesTarget(other)) return;
 
-        bool canSee = HasLineOfSight(other);
-        bool isSpotted = _visibleObjects.Contains(other.gameObject);
-
-        if (canSee && !isSpotted) Spot(other.gameObject);
-        if (!canSee && isSpotted) Lose(other.gameObject);
+        bool canSee = !requireLineOfSight || HasLineOfSight(other);
+        if (!canSee)
+        {
+            Lose(other.gameObject);
+            return;
+        }
+        _visibleObjects.Add(other.gameObject);
+        OnObjectDetected?.Invoke(
+            DroneDetectEvent.GetFromTransform((uint)index, other.transform, transform));
     }
 
     private void OnTriggerExit(Collider other)
@@ -78,7 +80,8 @@ public class Radar : MonoBehaviour
         // Use all layers if none are specified
         int mask = obstacleLayers == 0 ? ~0 : (int)obstacleLayers;
 
-        if (Physics.Raycast(origin, direction.normalized, out RaycastHit hit, distance, mask))
+        if (Physics.Raycast(origin, direction.normalized, out RaycastHit hit,
+                            distance, mask, QueryTriggerInteraction.Ignore))
         {
             // LOS is clear only if the first thing we hit IS our target (or its child)
             return hit.collider == target ||
