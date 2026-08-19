@@ -64,7 +64,7 @@ public class DroneDetectEventListener : MonoBehaviour
         _detectQueue.Enqueue(data);
     }
 
-    protected void Update()
+    protected void FixedUpdate()
     {
         while (_detectQueue.Count > 0)
         {

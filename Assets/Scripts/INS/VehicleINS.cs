@@ -59,15 +59,16 @@ public class VehicleINS : MonoBehaviour
         Quaternion Attitude = mount.rotation;
         Vector3 Position = mount.position;
 
-        bufferWriter.Write((float)Attitude.x);
-        bufferWriter.Write((float)Attitude.y);
-        bufferWriter.Write((float)Attitude.z);
-        bufferWriter.Write((float)Attitude.w);
-        bufferWriter.Write((ulong)ns);
-        bufferWriter.Write((float)CurrentAcceleration.x);
-        bufferWriter.Write((float)CurrentAcceleration.y);
-        bufferWriter.Write((float)CurrentAcceleration.z);
-
-        bufferWriter.Flush();
+        if (bufferWriter != null){
+            bufferWriter.Write((float)Attitude.x);
+            bufferWriter.Write((float)Attitude.y);
+            bufferWriter.Write((float)Attitude.z);
+            bufferWriter.Write((float)Attitude.w);
+            bufferWriter.Write((ulong)ns);
+            bufferWriter.Write((float)CurrentAcceleration.x);
+            bufferWriter.Write((float)CurrentAcceleration.y);
+            bufferWriter.Write((float)CurrentAcceleration.z);
+            bufferWriter.Flush();
+        }
     }
 }

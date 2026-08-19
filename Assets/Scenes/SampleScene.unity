@@ -802,6 +802,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.y
       value: -135
       objectReference: {fileID: 0}
+    - target: {fileID: 3377235572523880814, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.289
+      objectReference: {fileID: 0}
     - target: {fileID: 3393649004975167844, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -866,6 +870,14 @@ PrefabInstance:
       propertyPath: obstacleLayers.m_Bits
       value: 64
       objectReference: {fileID: 0}
+    - target: {fileID: 3934939480522474483, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
+      propertyPath: field of view
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 3934939480522474483, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
+      propertyPath: near clip plane
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 4218317876044358257, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -876,7 +888,7 @@ PrefabInstance:
       objectReference: {fileID: 8400000, guid: 85b99c4a83cfa3631a30ca3b80f78cc5, type: 2}
     - target: {fileID: 4675609345973132142, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.5
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 4675609345973132142, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
       propertyPath: m_LocalPosition.z
@@ -973,6 +985,34 @@ PrefabInstance:
     - target: {fileID: 7371075312255001887, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
       propertyPath: OnObjectSpotted.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7597664738937281039, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 7597664738937281039, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7597664738937281039, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7597664738937281039, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 7597664738937281039, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7597664738937281039, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7597664738937281039, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 7651440316568246706, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
       propertyPath: index
@@ -1078,12 +1118,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.y
       value: -225.85
       objectReference: {fileID: 0}
+    - target: {fileID: 8485470822383075153, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8485470822383075153, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8485470822383075153, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8913330638047989377, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 1547321363}
     m_RemovedComponents:
     - {fileID: 2755997526831606115, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
+    - {fileID: 8219843743573225873, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
     m_RemovedGameObjects:
     - {fileID: 465940934647490286, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
     - {fileID: 4077625999707923014, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
@@ -1105,6 +1158,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7651745477698076371, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1517034948}
+    - targetCorrespondingSourceObject: {fileID: 2654398982138982217, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1807692316}
   m_SourcePrefab: {fileID: 100100000, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
 --- !u!20 &104004164 stripped
 Camera:
@@ -3290,6 +3346,24 @@ MonoBehaviour:
   radarML: {fileID: 0}
   radarBR: {fileID: 1547520176}
   radarBL: {fileID: 1260966620}
+--- !u!1 &1807692315 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2654398982138982217, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
+  m_PrefabInstance: {fileID: 104004163}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1807692316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1807692315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d28c84adda96f8faa51d6f7e54afeef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GunScript
+  bulletPrefab: {fileID: 1934771378742775346, guid: d2b0ab827917c8a58bfc27836a4d374e, type: 3}
 --- !u!1 &1865068833 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1899138920919471719, guid: 1cb1276e9af955805a721c8f2ff9b5d2, type: 3}
@@ -4208,9 +4282,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 280899e1f3c3c0d54a12e6b6cd822d9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StereoCameraClient
-  camera: {fileID: 0}
-  targetIp: 127.0.0.1
-  targetPort: 8000
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

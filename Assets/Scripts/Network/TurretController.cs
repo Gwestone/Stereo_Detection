@@ -101,8 +101,8 @@ public class TurretController : MonoBehaviour
         try
         {
             this.writer.Write((byte)eyeID);
-            this.writer.Write(eulerAngles.x);
             this.writer.Write(eulerAngles.y);
+            this.writer.Write(eulerAngles.x);
             this.writer.Write(eulerAngles.z);
             this.writer.Write(rawPixels, 0, rawPixels.Length);
             this.writer.Flush(); // Flush forces the data out immediately
